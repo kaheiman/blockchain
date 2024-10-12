@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  blockchain-rest-api-server:
+    build: .
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    environment:
+      - PORT=${PORT}
+    depends_on:
+      - geth-node
+    networks:
+      - gethnet
+
+  geth-node:
+    build:
+      context: .
+      dockerfile: Dockerfile.geth
+    command:
+      --http
+      --http.addr "0.0.0.0"
+      --http.port 8545
+      --http.api "eth,web3,net,personal"
+      --http.vhosts "*"
+      --networkid 21
+      --nodiscover
+      --allow-insecure-unlock
+    ports:
+      - 8545:8545
+    networks:
+      - gethnet
+
+networks:
+  gethnet:
+    driver: bridge

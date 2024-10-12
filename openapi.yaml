@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Blockchain API
+  version: 1.0.0
+  description: API to interact with the ERC20 token on the private blockchain network.
+
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+paths:
+  /token/info/{token_address}:
+    get:
+      summary: Fetch ERC20 Token Information
+      parameters:
+        - in: path
+          name: token_address
+          schema:
+            type: string
+            format: ethereum-address
+          required: true
+          description: The ERC20 token contract address.
+      responses:
+        '200':
+          description: Token information retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenInfo'
+              examples:
+                success:
+                  summary: Example of a successful response
+                  value:
+                    name: "MyToken"
+                    symbol: "MTK"
+                    decimals: 18
+        '400':
+          description: Invalid request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                error:
+                  summary: Example of a 400 Bad Request response
+                  value:
+                    error: "Blockchain service error"
+                    message: "Invalid Ethereum address"
+        '422':
+          description: Unprocessable Entity (Invalid token address format or unable to fetch data).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                error:
+                  summary: Example of a 422 Unprocessable Entity response
+                  value:
+                    error: "Blockchain service error"
+                    message: "Invalid token address or token data unavailable"
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                error:
+                  summary: Example of a 500 Internal Server Error response
+                  value:
+                    error: "Blockchain service error"
+                    message: "Internal server error"
+
+  /token/balances/{token_address}:
+    get:
+      summary: Fetch ERC20 Token Balances
+      parameters:
+        - in: path
+          name: token_address
+          schema:
+            type: string
+            format: ethereum-address
+          required: true
+          description: The ERC20 token contract address.
+        - in: query
+          name: addresses
+          schema:
+            type: string
+          required: true
+          description: |
+            A comma-separated string of Ethereum addresses. For example:
+            `0x123...,0x456...,0x789...`
+      responses:
+        '200':
+          description: Token balances retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountBalance'
+              examples:
+                success:
+                  summary: Example of a successful response
+                  value:
+                    - address: "0xD87d2676B8bbd7d4bf7884089356F7BB82158cFe"
+                      balance: "1"
+                    - address: "0xE23d64c062d0Ee81b601241bc687a4aAD313D88d"
+                      balance: "99999"
+        '400':
+          description: Invalid request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                error:
+                  summary: Example of a 400 Bad Request response
+                  value:
+                    error: "Blockchain service error"
+                    message: "Invalid Ethereum address or input parameters"
+        '422':
+          description: Unprocessable Entity (e.g., invalid addresses format).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                error:
+                  summary: Example of a 422 Unprocessable Entity response
+                  value:
+                    error: "Blockchain service error"
+                    message: "Unable to process addresses or token address invalid"
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                error:
+                  summary: Example of a 500 Internal Server Error response
+                  value:
+                    error: "Blockchain service error"
+                    message: "Internal server error"
+
+components:
+  schemas:
+    TokenInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        symbol:
+          type: string
+        decimals:
+          type: integer
+
+    AccountBalance:
+      type: object
+      properties:
+        address:
+          type: string
+          format: ethereum-address
+          description: The Ethereum address.
+        balance:
+          type: string
+          description: The balance of the account in decimal notation.
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string

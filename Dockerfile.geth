@@ -1,0 +1,13 @@
+# Pull Docker image of official golang ethereum implementation
+FROM ethereum/client-go:stable
+
+
+# Copy genesis.json file to /tmp
+# Genesis file defined genesis block. Official documentation: https://geth.ethereum.org/docs/fundamentals/private-network
+COPY /geth/genesis.json /tmp
+
+# Initializing geth
+RUN geth init /tmp/genesis.json \
+  && rm -f ~/.ethereum/geth/nodekey
+
+ENTRYPOINT ["geth"]
