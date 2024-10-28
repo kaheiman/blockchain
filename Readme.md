@@ -1,3 +1,6 @@
+### Goal
+To setup a boilerplate for fetching data from private eth node. Docker-compose will create geth-node and validate the service through api server
+
 ### Setup
 ```
 cp .env.example .env
@@ -12,7 +15,6 @@ docker compose up --build
 The folder structure is crafted to utilize the Service Adapter Pattern, enhancing both flexibility and scalability, particularly when managing multiple blockchain platforms. This architectural approach enables your application to seamlessly interact with various blockchain services by abstracting their distinct implementations behind a unified interface.
 
 The environment folder is organized to facilitate straightforward deployment across different environments.
-
 
 ### Enginnering Excellent
 - [DONE] UUID Transaction IDs: Incorporated UUIDs as transaction IDs in each request to improve observability.
